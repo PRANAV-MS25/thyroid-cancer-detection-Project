@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Thyroid Nodule Classification{% endblock %}
+
+{% block content %}
+<div class="home-container">
+    <header class="hero-section">
+        <h1>Thyroid Nodule Detection & Classification System</h1>
+        <p class="hero-subtitle">Leveraging Deep Learning and Explainable AI (XAI) for Medical Image Analysis</p>
+    </header>
+
+    <section class="info-grid">
+        <div class="info-card">
+            <h3>🔬 Automated Detection</h3>
+            <p>Utilizes custom Deep Learning architectures (EfficientNetB2) trained to evaluate and classify thyroid ultrasound scans into Benign or Malignant indicators with precision probability tracking.</p>
+        </div>
+
+        <div class="info-card">
+            <h3>👁️ Explainable AI (Grad-CAM)</h3>
+            <p>Provides complete clinical transparency. The integrated Grad-CAM engine generates localized attention maps directly on uploaded scans, highlighting exactly which regions influenced the diagnostic output.</p>
+        </div>
+
+        <div class="info-card">
+            <h3>🗄️ Clinical Log Tracking</h3>
+            <p>Allows authorized users to maintain structured historical tracking logs for every analysis, instantly saving outputs, confidence numbers, and diagnostic timelines straight to an integrated SQLite database.</p>
+        </div>
+    </section>
+
+    <div class="action-footer">
+        {% if session.get('user_id') %}
+            <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+        {% else %}
+            <a href="{{ url_for('login') }}" class="btn btn-primary">Get Started / Login</a>
+            <a href="{{ url_for('register') }}" class="btn btn-secondary">Create Account</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
