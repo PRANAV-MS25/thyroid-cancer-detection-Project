@@ -86,3 +86,73 @@ mybuspass_project/
 | password      | VARCHAR (hashed)  | Encrypted account password         |
 | created_at    | DATETIME          | Account creation timestamp         |
 | is_active     | BOOLEAN           | User account activity status       |
+
+# ⚙️ Setup Instructions
+
+## 1. Prerequisites
+
+- Python 3.10+
+- pip
+- Virtual Environment support
+
+---
+
+## 2. Clone / Extract Project
+
+```bash
+cd thyroid-module-classification
+```
+
+---
+
+## 3. Create Virtual Environment
+
+```bash
+python -m venv venv
+```
+
+### Activate Environment
+
+```bash
+# Linux / Mac
+source venv/bin/activate
+
+# Windows
+venv\Scripts\activate
+```
+
+---
+
+## 4. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## 5. Initialize Database
+
+```bash
+python app.py
+```
+
+This automatically creates the SQLite database if not already present.
+
+---
+
+## 6. Run the Flask Server
+
+```bash
+python app.py
+```
+
+---
+
+## 7. Open in Browser
+
+```bash
+http://127.0.0.1:5000/
+```
+
+---
