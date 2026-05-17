@@ -64,3 +64,25 @@ mybuspass_project/
 | user_id    | FK → auth_user      |
 | roll_number| VARCHAR UNIQUE      |
 | department | VARCHAR             |
+
+### `core_patientscan`
+
+| Field             | Type      | Value                                      |
+|------------------|-----------|--------------------------------------------|
+| scan_id          | INT PK    | Scan analysis transaction key              |
+| patient_name     | VARCHAR   | Name of patient under analysis             |
+| ultrasound_image | VARCHAR   | Uploaded ultrasound image path             |
+| prediction_label | VARCHAR   | Prediction result (Benign / Malignant)     |
+| confidence_score | DECIMAL   | Prediction confidence percentage           |
+| analyzed_at      | DATETIME  | Prediction execution timestamp             |
+
+### `core_useraccount`
+
+| Field         | Type              | Value                              |
+|---------------|-------------------|------------------------------------|
+| id            | INT PK            | User unique identifier             |
+| username      | VARCHAR UNIQUE    | Login username                     |
+| email         | VARCHAR UNIQUE    | Registered email address           |
+| password      | VARCHAR (hashed)  | Encrypted account password         |
+| created_at    | DATETIME          | Account creation timestamp         |
+| is_active     | BOOLEAN           | User account activity status       |
