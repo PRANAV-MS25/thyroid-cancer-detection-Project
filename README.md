@@ -40,9 +40,9 @@ thyroid-nodule-classification/
 
 Field | Type | Value |
 | :--- | :--- | :--- |
-scan_id` | INT PK | Scan analysis transaction key |
-patient_name` | VARCHAR | Name of patient under analysis |
-ultrasound_image` | VARCHAR | Server path to the uploaded image file |
-prediction_label` | VARCHAR | Model output (Benign / Malignant) |
-confidence_score` | DECIMAL | Precision metric percentage |
-analyzed_at` | DATETIME | Execution timestamp |
+|scan_id` | INT PK | Scan analysis transaction key |
+|patient_name` | VARCHAR | Name of patient under analysis |
+|ultrasound_image` | VARCHAR | Server path to the uploaded image file |
+|prediction_label` | VARCHAR | Model output (Benign / Malignant) |
+|confidence_score` | DECIMAL | Precision metric percentage |
+|analyzed_at` | DATETIME | Execution timestamp |
