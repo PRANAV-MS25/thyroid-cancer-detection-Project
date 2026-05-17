@@ -156,3 +156,66 @@ http://127.0.0.1:5000/
 ```
 
 ---
+
+
+# 🔐 Default Credentials
+
+| Role  | Username | Password |
+|--------|-----------|-----------|
+| Admin  | admin     | admin123  |
+| User   | Register at `/signup/` | — |
+
+---
+
+# 🔄 System Flow
+
+User visits `/signup/` → Creates account  
+↓  
+Logs in at `/login/` → Redirected to dashboard  
+↓  
+Uploads thyroid ultrasound image  
+↓  
+CNN model processes image using EfficientNetB0  
+↓  
+Prediction generated → Benign / Malignant  
+↓  
+Grad-CAM heatmap generated for explainability  
+↓  
+Prediction stored in SQLite database  
+↓  
+User views diagnosis result + confidence score  
+
+---
+
+# 🌐 URL Reference
+
+| URL | Description |
+|-----|-------------|
+| `/` | Landing page |
+| `/login/` | User login |
+| `/signup/` | User registration |
+| `/dashboard/` | Main prediction dashboard |
+| `/predict/` | Upload ultrasound image |
+| `/results/` | Prediction results page |
+| `/history/` | View previous scan history |
+| `/logout/` | Logout session |
+| `/admin/` | Admin dashboard |
+| `/uploads/<filename>` | Uploaded image access |
+
+---
+
+# ✅ Features Implemented
+
+- User authentication system
+- Thyroid ultrasound image upload
+- CNN-based thyroid nodule classification
+- Benign vs Malignant prediction
+- EfficientNetB0 deep learning architecture
+- Grad-CAM explainable AI visualization
+- Confidence score generation
+- SQLite database integration
+- Flask backend integration
+- Responsive frontend UI
+- Prediction history management
+- Secure image upload handling
+- Real-time AI inference engine
