@@ -187,33 +187,6 @@ User views diagnosis result + confidence score
 
 ---
 
-# 🌐 URL Reference
-
-| URL | Description |
-|-----|-------------|
-| `/` | Landing page |
-| `/login/` | User login |
-| `/signup/` | User registration |
-| `/dashboard/` | Main prediction dashboard |
-| `/predict/` | Upload ultrasound image |
-| `/results/` | Prediction results page |
-| `/history/` | View previous scan history |
-| `/logout/` | Logout session |
-| `/admin/` | Admin dashboard |
-| `/uploads/<filename>` | Uploaded image access |
-
----
-
-thyroid-nodule-classification/
-│
-├── screenshots/
-│   ├── login-page.png
-│   ├── signup-page.png
-│   ├── dashboard.png
-│   ├── upload-scan.png
-│   ├── prediction-result.png
-│   ├── gradcam-heatmap.png
-│   └── history-page.png
 
 ---
 
