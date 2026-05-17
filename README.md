@@ -37,7 +37,7 @@ thyroid-nodule-classification/
     └── login.html                  # User login / signup page
 
 
-    ### `core_patientscan`
+### `core_patientscan`
 
 | Field | Type | Value |
 | :--- | :--- | :--- |
