@@ -204,6 +204,19 @@ User views diagnosis result + confidence score
 
 ---
 
+thyroid-nodule-classification/
+│
+├── screenshots/
+│   ├── login-page.png
+│   ├── signup-page.png
+│   ├── dashboard.png
+│   ├── upload-scan.png
+│   ├── prediction-result.png
+│   ├── gradcam-heatmap.png
+│   └── history-page.png
+
+---
+
 # ✅ Features Implemented
 
 - User authentication system
