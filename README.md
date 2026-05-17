@@ -8,41 +8,59 @@ An advanced, end-to-end medical image analysis web application designed to autom
 - **User Authentication:** Complete secure registration and login management system for clinicians.
 - **Patient Scan History:** Relational storage tracking historical diagnostic outcomes and confidence metrics per user.
 
-## 📁 System Architecture & Directory Layout
-```text
-thyroid-nodule-classification/
-│
-├── .gitignore                      # Excludes large database binaries and cache files
-├── README.md                       # Comprehensive project documentation
-├── requirements.txt                # Python dependencies (TensorFlow, Flask, OpenCV)
-├── app.py                          # Main Flask application engine
-│
-├── database/                       # Database layer
-│   ├── schema.sql                  # Structured table layouts
-│   └── thyroid_app.db              # Active SQLite database file
-│
-├── models/                         # Model registry
-│   └── efficientnet_b0_weights.h5  # Pre-trained deep learning weights
-│
-├── modules/                        # Backend business logic
-│   ├── predict.py                  # Core CNN inference logic
-│   └── gradcam.py                  # Heatmap & explainable AI layers
-│
-├── static/                         # Web assets
-│   ├── css/                        # Frontend styling
-│   └── uploads/                    # Folder where uploaded ultrasound scans are saved
-│
-└── templates/                      # Flask HTML structural pages
-    ├── index.html                  # Main dashboard / scan uploader
-    └── login.html                  # User login / signup page
+## 📂 System Architecture & Directory Layout
 
-### `core_patientscan`
+```bash
+mybuspass_project/
+│
+├── manage.py                     # Django project manager
+├── db.sqlite3                    # SQLite database
+├── requirements.txt              # Python dependencies
+├── README.md                     # Project documentation
+│
+├── static/
+│   └── style.css                 # Complete UI stylesheet
+│
+├── templates/
+│   ├── admin_dashboard.html
+│   ├── admin_applications.html
+│   ├── admin_routes.html
+│   ├── admin_route_form.html
+│   └── admin_students.html
+│
+├── buspass/
+│   ├── settings.py               # Django settings
+│   ├── urls.py                   # Main URL routing
+│   └── wsgi.py                   # WSGI configuration
+│
+└── core/
+    ├── models.py                 # Database models
+    ├── views.py                  # Business logic
+    ├── urls.py                   # App routes
+    └── forms.py                  # Django forms
+```
 
-Field | Type | Value |
-| :--- | :--- | :--- |
-|scan_id` | INT PK | Scan analysis transaction key |
-|patient_name` | VARCHAR | Name of patient under analysis |
-|ultrasound_image` | VARCHAR | Server path to the uploaded image file |
-|prediction_label` | VARCHAR | Model output (Benign / Malignant) |
-|confidence_score` | DECIMAL | Precision metric percentage |
-|analyzed_at` | DATETIME | Execution timestamp |
+---
+
+# 🗄️ Database Schema
+
+### `auth_user` (Django built-in)
+
+| Field      | Type              |
+|------------|-------------------|
+| id         | INT PK            |
+| username   | VARCHAR           |
+| email      | VARCHAR           |
+| first_name | VARCHAR           |
+| last_name  | VARCHAR           |
+| password   | VARCHAR (hashed)  |
+| is_staff   | BOOLEAN           |
+
+### `core_studentprofile`
+
+| Field      | Type                |
+|------------|---------------------|
+| id         | INT PK              |
+| user_id    | FK → auth_user      |
+| roll_number| VARCHAR UNIQUE      |
+| department | VARCHAR             |
