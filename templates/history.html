@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scan History - AI Thyroid Detector</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f8fafc; margin: 0; }
+        .navbar { background-color: #0F2537; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar .logo { font-weight: bold; font-size: 18px; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 20px; font-size: 14px; padding: 6px 12px; border-radius: 4px; }
+        .nav-links a.active, .nav-links a:hover { background-color: #EF4444; }
+        .container { max-width: 900px; margin: 40px auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h1 { color: #0F2537; margin-top: 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
+        th { background: #f8fafc; color: #475569; font-weight: bold; }
+        td { color: #334155; }
+        .empty-state { text-align: center; color: #94a3b8; padding: 30px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">AI Thyroid Detector <br><span style="font-size: 11px; font-weight: normal; color: #94a3b8;">Advanced Medical Scanner</span></div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/upload">Upload</a>
+            <a href="/diseases">Diseases</a>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+            <a href="/profile">Profile</a>
+            <a href="/history" class="active">History</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Scan History</h1>
+        <p style="color: #64748b; font-size: 14px;">Review your past uploaded scans and diagnostic results.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Date / Time</th>
+                    <th>Image Name</th>
+                    <th>Diagnosis Result</th>
+                    <th>Confidence</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if history %}
+                    {% for item in history %}
+                    <tr>
+                        <td>{{ item.date }}</td>
+                        <td>{{ item.filename }}</td>
+                        <td>{{ item.result }}</td>
+                        <td>{{ item.confidence }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="empty-state">No past diagnostic scans found. Head over to <a href="/upload">Upload</a> to run your first scan!</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

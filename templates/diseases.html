@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Thyroid Nodule Classification</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f8fafc; margin: 0; }
+        .navbar { background-color: #0F2537; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar .logo { font-weight: bold; font-size: 18px; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 20px; font-size: 14px; padding: 6px 12px; border-radius: 4px; }
+        .nav-links a.active, .nav-links a:hover { background-color: #EF4444; }
+        
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; text-align: center; }
+        h1 { color: #0F2537; margin-bottom: 5px; }
+        .subtitle { color: #64748b; font-size: 14px; margin-bottom: 40px; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; text-align: left; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #cbd5e1; }
+        .card.benign { border-top-color: #22c55e; }
+        .card.stage1 { border-top-color: #eab308; }
+        .card.stage2 { border-top-color: #f97316; }
+        .card.stage3 { border-top-color: #ef4444; }
+        
+        .card h3 { margin-top: 0; color: #1e293b; }
+        .risk { font-size: 12px; font-weight: bold; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 12px; }
+        .risk.low { background: #dcfce7; color: #166534; }
+        .risk.med-low { background: #fef9c3; color: #854d0e; }
+        .risk.med { background: #ffedd5; color: #9a3412; }
+        .risk.high { background: #fee2e2; color: #991b1b; }
+        .card p { color: #475569; font-size: 13px; line-height: 1.5; margin: 0; }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="logo">AI Thyroid Detector <br><span style="font-size: 11px; font-weight: normal; color: #94a3b8;">Advanced Medical Scanner</span></div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/upload">Upload</a>
+            <a href="/diseases" class="active">Diseases</a>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+            <a href="/profile">Profile</a>
+            <a href="/history">History</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Thyroid Nodule Classification</h1>
+        <div class="subtitle">Detailed medical overview of all nodule types identified by our AI engine.</div>
+
+        <div class="grid">
+            <div class="card benign">
+                <h3>Benign Nodule</h3>
+                <div class="risk low">Risk: Very Low</div>
+                <p>Benign nodules are harmless, non-cancerous growths. Most patients require only routine follow-up scans with no major medical intervention.</p>
+            </div>
+
+            <div class="card stage1">
+                <h3>Stage 1 Nodule</h3>
+                <div class="risk med-low">Risk: Low</div>
+                <p>Early-stage tissue irregularity. These nodules typically need periodic evaluation, but major health concerns are uncommon at this stage.</p>
+            </div>
+
+            <div class="card stage2">
+                <h3>Stage 2 Nodule</h3>
+                <div class="risk med">Risk: Moderate</div>
+                <p>Indicates increased growth activity or structural changes. Consultation with a thyroid specialist is advised for early intervention.</p>
+            </div>
+
+            <div class="card stage3">
+                <h3>Stage 3 Nodule</h3>
+                <div class="risk high">Risk: High</div>
+                <p>High-risk nodules showing significant signs of malignancy. Immediate specialist evaluation and diagnostic testing are strongly recommended.</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

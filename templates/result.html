@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Diagnosis Result - AI Thyroid Detector</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f8fafc; margin: 0; color: #1e293b; }
+        .navbar { background-color: #0F2537; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar .logo { font-weight: bold; font-size: 18px; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 20px; font-size: 14px; padding: 6px 12px; border-radius: 4px; }
+        .nav-links a.active, .nav-links a:hover { background-color: #EF4444; }
+
+        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .result-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; border-top: 6px solid #1d4ed8; }
+        
+        .scan-img { width: 200px; height: 200px; object-fit: cover; border-radius: 8px; border: 2px solid #cbd5e1; margin-bottom: 20px; }
+        
+        h1 { color: #0F2537; margin-bottom: 10px; font-size: 26px; }
+        
+        .badge { display: inline-block; padding: 8px 16px; border-radius: 6px; font-size: 18px; font-weight: bold; margin: 15px 0; }
+        .badge.benign { background: #dcfce7; color: #166534; }
+        .badge.stage { background: #fee2e2; color: #991b1b; }
+        .badge.invalid { background: #f1f5f9; color: #475569; }
+
+        .confidence-box { background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #e2e8f0; text-align: left; }
+        .progress-bar-container { background: #e2e8f0; border-radius: 4px; height: 12px; width: 100%; margin-top: 8px; overflow: hidden; }
+        .progress-bar { background: #1d4ed8; height: 100%; width: {{ confidence | string | replace('%','') }}%; }
+
+        .diagnosis-box { background: #eff6ff; border-left: 4px solid #1d4ed8; padding: 15px; text-align: left; border-radius: 4px; margin: 20px 0; font-size: 14px; color: #1e3a8a; }
+        
+        .actions { margin-top: 30px; display: flex; justify-content: center; gap: 15px; }
+        .btn { padding: 10px 20px; border-radius: 6px; font-weight: bold; text-decoration: none; font-size: 14px; cursor: pointer; border: none; }
+        .btn-primary { background: #1d4ed8; color: white; }
+        .btn-primary:hover { background: #1e40af; }
+        .btn-secondary { background: #475569; color: white; }
+        .btn-secondary:hover { background: #334155; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">AI Thyroid Detector</div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/upload" class="active">Upload</a>
+            <a href="/profile">Profile</a>
+            <a href="/history">History</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="result-card">
+            <img src="{{ url_for('static', filename='uploads/' + image_path.split('/')[-1]) }}" alt="Uploaded Scan" class="scan-img">
+            
+            <h1>Analysis Report for {{ patient_name }}</h1>
+            <p style="color: #64748b; font-size: 13px;">Scanned on: {{ date_time }}</p>
+
+            <!-- Result Badge -->
+            <div>
+                <span class="badge {% if label == 'Benign' %}benign{% elif 'Stage' in label or 'Malignant' in label %}stage{% else %}invalid{% endif %}">
+                    Result: {{ label }}
+                </span>
+            </div>
+
+            <!-- Confidence Meter -->
+            {% if label != 'Invalid Image' %}
+            <div class="confidence-box">
+                <strong>Confidence Meter: {{ confidence }}%</strong>
+                <div class="progress-bar-container">
+                    <div class="progress-bar"></div>
+                </div>
+            </div>
+
+            <!-- Small Diagnosis / Action Plan -->
+            <div class="diagnosis-box">
+                <strong>Recommended Action / Diagnosis:</strong>
+                <p style="margin: 5px 0 0 0;">
+                    {% if label == 'Benign' %}
+                        No immediate threat detected. Routine annual ultrasound monitoring and follow-up with your primary care physician are recommended.
+                    {% elif 'Stage 1' in label %}
+                        Early-stage nodule activity detected. Consult an endocrinologist for a comprehensive evaluation and possible fine-needle aspiration (FNA).
+                    {% elif 'Stage 2' in label %}
+                        Moderate nodule progression observed. Specialist referral is strongly advised for detailed clinical assessment and treatment planning.
+                    {% elif 'Stage 3' in label or 'Malignant' in label %}
+                        Advanced nodule presentation identified. Immediate medical intervention and consultation with a specialist oncological surgeon or endocrinologist are required.
+                    {% else %}
+                        Please consult a medical professional for review.
+                    {% endif %}
+                </p>
+            </div>
+            {% else %}
+            <div class="diagnosis-box" style="background: #fef2f2; border-left-color: #dc2626; color: #991b1b; text-align: left;">
+                <strong>Error:</strong> This does not appear to be a valid thyroid ultrasound scan. Please upload a clear ultrasound image.
+            </div>
+            {% endif %}
+
+            <!-- Actions -->
+            <div class="actions">
+                <a href="/upload" class="btn btn-secondary">Upload Another Scan</a>
+                {% if label != 'Invalid Image' %}
+                <a href="/report?image_path={{ image_path }}&label={{ label }}&confidence={{ confidence }}&patient_name={{ patient_name }}&age={{ age }}&gender={{ gender }}&phone={{ phone }}&email={{ email }}&date_time={{ date_time }}" class="btn btn-primary">View Full Report Page</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

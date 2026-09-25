@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Ultrasound - AI Thyroid Detector</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f8fafc; margin: 0; color: #1e293b; }
+        .navbar { background-color: #0F2537; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar .logo { font-weight: bold; font-size: 18px; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 20px; font-size: 14px; padding: 6px 12px; border-radius: 4px; }
+        .nav-links a.active, .nav-links a:hover { background-color: #EF4444; }
+
+        .container { max-width: 600px; margin: 40px auto; padding: 0 20px; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h2 { color: #0F2537; text-align: center; margin-bottom: 5px; }
+        p.subtitle { text-align: center; color: #64748b; font-size: 13px; margin-bottom: 25px; }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; font-size: 13px; margin-bottom: 5px; color: #334155; }
+        input[type="text"], input[type="number"], input[type="email"], select {
+            width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; box-sizing: border-box;
+        }
+        
+        .file-drop-area { border: 2px dashed #cbd5e1; padding: 25px; text-align: center; border-radius: 8px; background: #f8fafc; margin-bottom: 20px; }
+        
+        .btn-submit { background: #EF4444; color: white; border: none; width: 100%; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; }
+        .btn-submit:hover { background: #dc2626; }
+        
+        .error-msg { background: #ffeeec; color: #b91c1c; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">AI Thyroid Detector</div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/upload" class="active">Upload</a>
+            <a href="/diseases">Diseases</a>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+            <a href="/profile">Profile</a>
+            <a href="/history">History</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h2>Upload Thyroid Ultrasound Scan</h2>
+            <p class="subtitle">Please fill in patient details and upload a clear ultrasound scan for instant AI risk assessment.</p>
+
+            {% if error %}
+            <div class="error-msg">{{ error }}</div>
+            {% endif %}
+
+            <form action="/predict" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="patient_name">Patient Name:</label>
+                    <input type="text" id="patient_name" name="patient_name" value="{{ session.get('name', '') }}" required placeholder="Enter full name">
+                </div>
+
+                <div style="display: flex; gap: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="age">Age:</label>
+                        <input type="number" id="age" name="age" required placeholder="Age">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="gender">Gender:</label>
+                        <select id="gender" name="gender" required>
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number:</label>
+                    <input type="text" id="phone" name="phone" required placeholder="Enter phone number">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address (For Report Delivery):</label>
+                    <input type="email" id="email" name="email" value="{{ session.get('user_email', '') }}" required placeholder="Enter email address">
+                </div>
+
+                <div class="file-drop-area">
+                    <label for="file" style="cursor: pointer; color: #1d4ed8; font-weight: bold; margin-bottom: 8px; display: block;">Choose Ultrasound Image</label>
+                    <input type="file" id="file" name="file" accept="image/*" required style="margin: 0 auto; display: block;">
+                    <p style="font-size: 12px; color: #64748b; margin-top: 8px;">Supported formats: JPG, PNG, JPEG</p>
+                </div>
+
+                <button type="submit" class="btn-submit">Run AI Diagnosis</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Thyroid Detector - Home</title>
+    <style>
+        body, html { height: 100%; margin: 0; font-family: Arial, sans-serif; background-color: #f8fafc; }
+        .navbar { background-color: #0F2537; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar .logo { font-weight: bold; font-size: 18px; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 20px; font-size: 14px; padding: 6px 12px; border-radius: 4px; }
+        .nav-links a.active, .nav-links a:hover { background-color: #EF4444; }
+        
+        /* Hero Section pointing directly to static/image.png */
+        .hero {
+            position: relative;
+            height: calc(100vh - 70px);
+            background: url("{{ url_for('static', filename='image.png') }}") no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hero-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 37, 55, 0.45);
+        }
+        .hero-card {
+            position: relative;
+            background: linear-gradient(135deg, #0f2537 0%, #1e3a8a 100%);
+            color: white;
+            padding: 50px;
+            border-radius: 16px;
+            max-width: 650px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .hero-card h2 { font-size: 28px; margin-top: 10px; margin-bottom: 15px; }
+        .hero-card p { font-size: 15px; color: #cbd5e1; margin-bottom: 30px; line-height: 1.6; }
+        .btn-start { background-color: #EF4444; color: white; border: none; padding: 12px 28px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn-start:hover { background-color: #dc2626; }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <div class="logo">AI Thyroid Detector <br><span style="font-size: 11px; font-weight: normal; color: #94a3b8;">Advanced Medical Scanner</span></div>
+        <div class="nav-links">
+            <a href="/" class="active">Home</a>
+            <a href="/upload">Upload</a>
+            <a href="/diseases">Diseases</a>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+            <a href="/profile">Profile</a>
+            <a href="/history">History</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-card">
+            <div style="font-size: 13px; color: #93c5fd; font-weight: bold;">Welcome back, {{ session.get('user_name', 'User') }} 👋</div>
+            <h2>AI-Powered Thyroid Screening</h2>
+            <p>Upload your ultrasound scan and receive an instant medical-grade assessment powered by deep learning and image processing.</p>
+            <a href="/upload" class="btn-start">Start Diagnosis</a>
+        </div>
+    </div>
+
+</body>
+</html>

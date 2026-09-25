@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contact - AI Thyroid Detector</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f8fafc; margin: 0; }
+        .navbar { background-color: #0F2537; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar .logo { font-weight: bold; font-size: 18px; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 20px; font-size: 14px; padding: 6px 12px; border-radius: 4px; }
+        .nav-links a.active, .nav-links a:hover { background-color: #EF4444; }
+        .container { max-width: 600px; margin: 40px auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h1 { color: #0F2537; margin-top: 0; }
+        p { color: #64748b; font-size: 14px; }
+        label { font-size: 12px; font-weight: bold; color: #334155; display: block; margin-top: 15px; }
+        input, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
+        textarea { height: 120px; }
+        .btn-submit { background: #1d4ed8; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; }
+        .btn-submit:hover { background: #1e40af; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">AI Thyroid Detector <br><span style="font-size: 11px; font-weight: normal; color: #94a3b8;">Advanced Medical Scanner</span></div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/upload">Upload</a>
+            <a href="/diseases">Diseases</a>
+            <a href="/about">About</a>
+            <a href="/contact" class="active">Contact</a>
+            <a href="/profile">Profile</a>
+            <a href="/history">History</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Contact Support</h1>
+        <p>Have questions or feedback? Drop us a message below.</p>
+        
+        <form method="POST">
+            <label>Your Name</label>
+            <input type="text" name="name" placeholder="Enter your name" required>
+
+            <label>Email Address</label>
+            <input type="email" name="email" placeholder="Enter your email" required>
+
+            <label>Message</label>
+            <textarea name="message" placeholder="Type your message here..." required></textarea>
+
+            <button type="submit" class="btn-submit">Send Message</button>
+        </form>
+    </div>
+</body>
+</html>

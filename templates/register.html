@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ThyroidDetect - Register</title>
+    <style>
+        body, html { height: 100%; margin: 0; font-family: Arial, sans-serif; }
+        .split-screen { display: flex; height: 100vh; }
+        .left-bg { flex: 1; background: #e2e8f0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .left-bg img { width: 100%; height: 100%; object-fit: cover; }
+        .right-form { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 40px 60px; background: white; overflow-y: auto; }
+        h2 { color: #0f2537; margin-bottom: 5px; }
+        .subtitle { color: #64748b; font-size: 14px; margin-bottom: 20px; }
+        label { font-size: 12px; font-weight: bold; color: #334155; }
+        input, select { width: 100%; padding: 10px; margin-top: 4px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; background: white; font-size: 14px; }
+        .btn-register { width: 100%; background: #1d4ed8; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-register:hover { background: #1e40af; }
+        .login-link { text-align: center; margin-top: 15px; font-size: 13px; color: #64748b; }
+        .login-link a { color: #1d4ed8; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="split-screen">
+        <div class="left-bg">
+            <img src="C:\Users\Dell\Desktop\Projects\thyroid 26\static\image.png" alt="Thyroid Anatomy">
+        </div>
+        <div class="right-form">
+            <h2>Create Account</h2>
+            <p class="subtitle">Register to start using AI Thyroid Detector</p>
+            
+            {% if error %}
+                <p style="color: red; font-size: 13px;">{{ error }}</p>
+            {% endif %}
+
+            <form method="POST">
+                <label>Full Name</label>
+                <input type="text" name="name" placeholder="Enter full name" required>
+                
+                <label>Email Address</label>
+                <input type="email" name="email" placeholder="Enter email" required>
+
+                <label>Phone Number</label>
+                <input type="text" name="phone" placeholder="Enter phone number">
+
+                <label>Date of Birth</label>
+                <input type="date" name="dob" required>
+
+                <label>Age</label>
+                <input type="number" name="age" placeholder="Enter age">
+
+                <label>Gender</label>
+                <select name="gender" required>
+                    <option value="" disabled selected>Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+                
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Create password" required>
+                
+                <button type="submit" class="btn-register">Register</button>
+            </form>
+            
+            <div class="login-link">
+                Already have an account? <a href="/login">Login here</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
