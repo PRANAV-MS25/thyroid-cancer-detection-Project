@@ -1,9 +1,10 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, session
-from datetime import datetime
+import sqlite3
 import smtplib
+from datetime import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 
 from predict import predict
 from db.database import (
@@ -20,74 +21,121 @@ from db.database import (
 app = Flask(__name__)
 app.secret_key = "thyroiddetect_secret_key_123"
 
-# FOLDERS
-UPLOAD_FOLDER = "static/uploads"
-PROFILE_FOLDER = "static/profile"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(PROFILE_FOLDER, exist_ok=True)
-
-# Initialize DB
-init_db()
-
 # =====================================================
-# GMAIL SMTP — auto email sending for report
+# GMAIL SMTP CONFIGURATION & SENDER FUNCTION
 # =====================================================
-SMTP_EMAIL = "psshreyas007@gmail.com"
-SMTP_PASSWORD = "mkfndgwwqxivyuye"   # App password (no spaces)
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_PORT = 465
+SMTP_EMAIL = "pranavmatham@gmail.com"
+SMTP_PASSWORD = "rylnzfyvonfdplrj"
 
 def send_report_email(to_email, patient_name, prediction, confidence, date_time):
     try:
-        subject = "Your Thyroid AI Report - ThyroidDetect"
-        body = f"""
-        Dear {patient_name},
+        subject = "Thyroid AI Diagnostic Report - ThyroidDetect"
+        
+        html_body = f"""
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; }}
+                .report-card {{ max-width: 600px; background: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin: auto; border-top: 5px solid #0d6efd; }}
+                .header {{ text-align: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }}
+                .header h2 {{ color: #333; margin: 0; }}
+                .header p {{ color: #778899; font-size: 13px; margin: 5px 0 0; }}
+                .section-title {{ font-size: 14px; font-weight: bold; color: #555; text-transform: uppercase; margin-top: 20px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }}
+                .info-table {{ width: 100%; margin-top: 10px; border-collapse: collapse; }}
+                .info-table td {{ padding: 8px; font-size: 14px; color: #333; }}
+                .result-box {{ background: #eef2f7; padding: 15px; border-radius: 6px; margin-top: 20px; text-align: center; }}
+                .result-box h3 {{ margin: 0; color: #0d6efd; font-size: 20px; }}
+                .result-box p {{ margin: 5px 0 0; color: #555; font-size: 14px; }}
+                .footer {{ margin-top: 30px; font-size: 12px; color: #888; text-align: center; border-top: 1px solid #eee; padding-top: 15px; }}
+            </style>
+        </head>
+        <body>
+            <div class="report-card">
+                <div class="header">
+                    <h2>AI Thyroid Diagnostic Report</h2>
+                    <p>AI-Assisted Deep Learning Ultrasound Screening System</p>
+                </div>
+                
+                <div class="section-title">Patient Information</div>
+                <table class="info-table">
+                    <tr>
+                        <td><strong>Patient Name:</strong> {patient_name}</td>
+                        <td><strong>Date:</strong> {date_time}</td>
+                    </tr>
+                </table>
 
-        Your thyroid scan has been successfully analyzed.
+                <div class="section-title">Diagnostic Results</div>
+                <div class="result-box">
+                    <h3>Primary Finding: {prediction}</h3>
+                    <p>Confidence Level: <strong>{confidence}%</strong></p>
+                </div>
 
-        -----------------------------
-        AI DIAGNOSIS REPORT
-        -----------------------------
-        Result: {prediction}
-        Confidence: {confidence}%
-        Date: {date_time}
+                <div class="section-title">Important Note</div>
+                <p style="font-size: 13px; color: #666; line-height: 1.5;">
+                    This document is an AI-generated diagnostic screening report. The classifications provided are generated using deep learning image analysis and must be verified by a board-certified endocrinologist or physician prior to initiating any medical treatment.
+                </p>
 
-        NOTE: This report is AI-generated.
-        Please consult a medical professional for confirmation.
-
-        Regards,
-        ThyroidDetect Team
+                <div class="footer">
+                    <p>Regards,<br><strong>ThyroidDetect Team</strong></p>
+                </div>
+            </div>
+        </body>
+        </html>
         """
 
         msg = MIMEMultipart()
         msg["From"] = SMTP_EMAIL
         msg["To"] = to_email
         msg["Subject"] = subject
-        msg.attach(MIMEText(body, "plain"))
+        msg.attach(MIMEText(html_body, "html"))
 
-        server = smtplib.SMTP("smtp.gmail.com", 587)
-        server.starttls()
-        server.login(SMTP_EMAIL, SMTP_PASSWORD)
-        server.sendmail(SMTP_EMAIL, to_email, msg.as_string())
-        server.quit()
+        with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT) as server:
+            server.login(SMTP_EMAIL, SMTP_PASSWORD)
+            server.sendmail(SMTP_EMAIL, to_email, msg.as_string())
 
-        print("✔ Email sent successfully!")
+        print("✔ HTML Email sent successfully!")
+        return True
     except Exception as e:
-        print("❌ Email sending failed:", str(e))
-
+        print("❌ Email sending failed:", repr(e))
+        return False
 
 # =====================================================
-# HOME PAGE
+# FOLDERS & DB INITIALIZATION
+# =====================================================
+UPLOAD_FOLDER = "static/uploads"
+PROFILE_FOLDER = "static/profile"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(PROFILE_FOLDER, exist_ok=True)
+
+init_db()
+
+# =====================================================
+# LANDING & DASHBOARD ROUTES
 # =====================================================
 @app.route("/")
-def home_page():
+def index():
+    if "user_id" in session:
+        return redirect(url_for("dashboard"))
+    return render_template("login.html", active_page="login")
+
+@app.route("/dashboard")
+def dashboard():
     if "user_id" not in session:
         return redirect(url_for("login"))
-    
     username = session.get("name")
     return render_template("home.html", active_page="home", username=username)
 
+@app.route("/home")
+def home_page():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    username = session.get("name")
+    return render_template("home.html", active_page="home", username=username)
 
 # =====================================================
-# LOGIN
+# LOGIN & REGISTER
 # =====================================================
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -100,16 +148,18 @@ def login():
         if user_id:
             session["user_id"] = user_id
             session["name"] = name
+            
+            user_full = get_user_by_id(user_id)
+            if user_full:
+                session["user_email"] = user_full[4]
+                session["user_phone"] = user_full[5]
+
             return redirect("/")
 
         return render_template("login.html", error="Invalid login!", active_page="login")
 
     return render_template("login.html", active_page="login")
 
-
-# =====================================================
-# REGISTER
-# =====================================================
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -122,37 +172,34 @@ def register():
 
         create_user(name, dob, age, email, phone, password)
         
-        # Auto-login after registration
         user_id, name = verify_login(email, password)
         if user_id:
             session["user_id"] = user_id
             session["name"] = name
+            session["user_email"] = email
+            session["user_phone"] = phone
             return redirect("/")
             
         return redirect("/login")
 
     return render_template("register.html", active_page="register")
 
-
-# =====================================================
-# UPLOAD + PREDICTION + SAVE + EMAIL
-# =====================================================
 # =====================================================
 # UPLOAD + PREDICTION + SAVE + EMAIL
 # =====================================================
 @app.route("/upload", methods=["GET", "POST"])
 @app.route("/predict", methods=["POST"])
 def upload_page():
-    if request.method == "POST":
+    if "user_id" not in session:
+        return redirect(url_for("login"))
 
-        # Patient Info
+    if request.method == "POST":
         patient_name = request.form.get("patient_name", session.get("name", "Guest"))
         age = request.form.get("age", "30")
         gender = request.form.get("gender", "Not Specified")
-        phone = request.form.get("phone", "")
+        phone = request.form.get("phone", session.get("user_phone", ""))
         email = request.form.get("email", session.get("user_email", ""))
 
-        # Image Upload (Supports both 'file' and 'image' input names from HTML)
         file_key = "file" if "file" in request.files else ("image" if "image" in request.files else None)
         
         if not file_key:
@@ -163,10 +210,9 @@ def upload_page():
             return render_template("upload.html", error="Please upload an image", active_page="upload")
 
         filename = image.filename
-        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        filepath = f"{UPLOAD_FOLDER}/{filename}"
         image.save(filepath)
 
-        # Prediction
         result = predict(filepath)
 
         if result == "Not a thyroid ultrasound image":
@@ -176,106 +222,67 @@ def upload_page():
                 "label": "Invalid Image",
                 "confidence": 0,
                 "explanation": "This is not a thyroid ultrasound image.",
-                "patient_name": patient_name,
-                "age": age,
-                "gender": gender,
-                "phone": phone,
-                "email": email,
-                "date_time": date_time
+                "patient_name": patient_name, "age": age, "gender": gender, "phone": phone, "email": email, "date_time": date_time
             }
             return render_template("result.html",
-                                   image_path=filepath,
-                                   label="Invalid Image",
-                                   confidence=0,
+                                   image_path=filepath, label="Invalid Image", confidence=0,
                                    explanation="This is not a thyroid ultrasound image.",
-                                   patient_name=patient_name,
-                                   age=age,
-                                   gender=gender,
-                                   phone=phone,
-                                   email=email,
-                                   date_time=date_time,
-                                   active_page="upload")
+                                   patient_name=patient_name, age=age, gender=gender, phone=phone, email=email,
+                                   date_time=date_time, active_page="upload")
 
         prediction, confidence = result
         
-        # --- SMART CONFIDENCE CALIBRATION ---
         try:
             confidence = float(confidence)
         except:
             confidence = 90.0
 
-        # Ensure confidence fits realistic clinical thresholds per stage type
         if "Benign" in prediction:
-            confidence = max(92.0, min(confidence, 98.5))  # High confidence for benign
+            confidence = max(92.0, min(confidence, 98.5))
         elif "Stage 1" in prediction:
-            confidence = max(86.0, min(confidence, 94.0))  # Solid high-mid for stage 1
+            confidence = max(86.0, min(confidence, 94.0))
         elif "Stage 2" in prediction:
-            confidence = max(75.0, min(confidence, 85.0))  # Mid-level range for stage 2 progression
+            confidence = max(75.0, min(confidence, 85.0))
         elif "Stage 3" in prediction or "Malignant" in prediction:
-            confidence = max(88.0, min(confidence, 96.5))  # High-mid alert for advanced stages
+            confidence = max(88.0, min(confidence, 96.5))
         else:
             confidence = max(80.0, min(confidence, 90.0))
             
         confidence = round(confidence, 1)
-        # ------------------------------------
-
         date_time = datetime.now().strftime("%d %b %Y, %I:%M %p")
 
-        # Save to DB
         save_patient_report({
-            "patient_name": patient_name,
-            "age": age,
-            "gender": gender,
-            "phone": phone,
-            "email": email,
-            "image_path": filepath,
-            "prediction": prediction,
-            "confidence": confidence,
-            "date_time": date_time
+            "user_id": session.get("user_id"),
+            "patient_name": patient_name, "age": age, "gender": gender,
+            "phone": phone, "email": email, "image_path": filepath,
+            "prediction": prediction, "confidence": confidence, "date_time": date_time
         })
 
-        # SEND EMAIL (if email provided)
         if email:
             send_report_email(email, patient_name, prediction, confidence, date_time)
 
-        # Save LAST REPORT in session (for View Last Report from profile)
         session["last_report"] = {
-            "image_path": filepath,
-            "label": prediction,
-            "confidence": confidence,
-            "explanation": "AI-based thyroid classification",
-            "patient_name": patient_name,
-            "age": age,
-            "gender": gender,
-            "phone": phone,
-            "email": email,
-            "date_time": date_time
+            "image_path": filepath, "label": prediction, "confidence": confidence,
+            "explanation": "AI-based thyroid classification", "patient_name": patient_name,
+            "age": age, "gender": gender, "phone": phone, "email": email, "date_time": date_time
         }
 
-        # Show Result Page
         return render_template(
             "result.html",
-            image_path=filepath,
-            label=prediction,
-            confidence=confidence,
-            explanation="AI-based thyroid classification",
-            patient_name=patient_name,
-            age=age,
-            gender=gender,
-            phone=phone,
-            email=email,
-            date_time=date_time,
-            active_page="upload"
+            image_path=filepath, label=prediction, confidence=confidence,
+            explanation="AI-based thyroid classification", patient_name=patient_name,
+            age=age, gender=gender, phone=phone, email=email, date_time=date_time, active_page="upload"
         )
 
     return render_template("upload.html", active_page="upload")
 
-
 # =====================================================
-# FULL REPORT PAGE (used by View Full Report button)
+# REPORT & HISTORY ROUTES
 # =====================================================
 @app.route("/report")
 def report():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
     return render_template(
         "report.html",
         image_path=request.args.get("image_path"),
@@ -291,34 +298,58 @@ def report():
         active_page="report"
     )
 
+@app.route("/send_report_manual", methods=["POST"])
+def send_report_manual():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+        
+    patient_name = request.form.get("patient_name")
+    prediction = request.form.get("prediction")
+    confidence = request.form.get("confidence")
+    date_time = request.form.get("date_time")
+    custom_email = request.form.get("custom_email")
+    
+    if custom_email:
+        success = send_report_email(custom_email, patient_name, prediction, confidence, date_time)
+        if success:
+            flash(f"Report successfully sent to {custom_email}!", "success")
+        else:
+            flash("Failed to send email. Check your terminal for the exact error.", "error")
+    else:
+        flash("Please enter a valid email address.", "error")
+        
+    return redirect(request.referrer or url_for("dashboard"))
 
-# =====================================================
-# VIEW LAST REPORT (from Profile page)
-# =====================================================
 @app.route("/last_report")
 def last_report():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
     data = session.get("last_report")
     if not data:
         return redirect(url_for("upload_page"))
     return redirect(url_for("report", **data))
 
-
-# =====================================================
-# HISTORY PAGE
-# =====================================================
 @app.route("/history", methods=["GET", "POST"])
 def history():
-    results = []
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+        
+    history_records = []
+    user_id = session.get("user_id")
+    user_phone = session.get("user_phone")
+
+    if user_id or user_phone:
+        history_records = get_user_reports(user_id if user_id else user_phone)
 
     if request.method == "POST":
-        keyword = request.form["keyword"]
-        results = search_reports(keyword)
+        keyword = request.form.get("keyword", "")
+        if keyword:
+            history_records = search_reports(keyword)
 
-    return render_template("history.html", results=results, active_page="history")
-
+    return render_template("history.html", history=history_records, active_page="history")
 
 # =====================================================
-# PROFILE IMAGE UPLOAD
+# PROFILE & SETTINGS
 # =====================================================
 @app.route("/upload_profile_image", methods=["POST"])
 def upload_profile_image():
@@ -334,64 +365,49 @@ def upload_profile_image():
     image.save(filepath)
 
     session["profile_image"] = filepath
-
     return redirect("/profile")
 
-
-# =====================================================
-# PROFILE PAGE
-# =====================================================
 @app.route("/profile")
 def profile():
     if "user_id" not in session:
-        return redirect("/login")
-
-    user = get_user_by_id(session["user_id"])
-
-    user_data = {
-        "name": user[1],
-        "dob": user[2],
-        "age": user[3],
-        "email": user[4],
-        "phone": user[5]
-    }
-
-    reports = get_user_reports(user_data["phone"])
-    stats = get_user_stats(user_data["phone"])
-
-    return render_template("profile.html",
-                           user=user_data,
-                           reports=reports,
-                           stats=stats,
-                           active_page="profile")
-
+        return redirect(url_for("login"))
+    
+    user_id = session.get("user_id")
+    user_data = get_user_by_id(user_id)
+    user_reports = get_user_reports(user_id=user_id)
+    
+    total_scans = len(user_reports)
+    benign_count = sum(1 for r in user_reports if "Benign" in str(r["prediction"]))
+    nodule_count = total_scans - benign_count
+    return render_template(
+        "profile.html", 
+        active_page="profile", 
+        user=user_data,
+        reports=user_reports,
+        total_scans=total_scans,
+        benign_count=benign_count,
+        nodule_count=nodule_count
+    )
 
 # =====================================================
-# STATIC PAGES
+# STATIC PAGES & LOGOUT
 # =====================================================
 @app.route("/diseases")
 def diseases():
     return render_template("diseases.html", active_page="diseases")
 
-
 @app.route("/about")
 def about():
     return render_template("about.html", active_page="about")
-
 
 @app.route("/contact")
 def contact():
     return render_template("contact.html", active_page="contact")
 
-
-# =====================================================
-# LOGOUT
-# =====================================================
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect("/login")
-
 
 # =====================================================
 # RUN SERVER

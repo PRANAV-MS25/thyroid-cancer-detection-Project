@@ -30,6 +30,7 @@ def init_db():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS reports (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
             patient_name TEXT,
             age TEXT,
             gender TEXT,
@@ -41,6 +42,12 @@ def init_db():
             date_time TEXT
         )
     """)
+    # Safely ensure user_id column exists if table was previously created without it
+    try:
+        cursor.execute("ALTER TABLE reports ADD COLUMN user_id INTEGER")
+        conn.commit()
+    except sqlite3.OperationalError:
+        pass  # Column already exists
     conn.commit()
     conn.close()
 
@@ -84,13 +91,14 @@ def get_user_by_id(user_id):
     return user
 
 def save_patient_report(data):
-    """Saves an AI analysis report to the database."""
+    """Saves an AI analysis report to the database with user association."""
     conn = sqlite3.connect(REPORTS_DB)
     cursor = conn.cursor()
     cursor.execute("""
-        INSERT INTO reports (patient_name, age, gender, phone, email, image_path, prediction, confidence, date_time)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO reports (user_id, patient_name, age, gender, phone, email, image_path, prediction, confidence, date_time)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
+        data.get("user_id"),
         data["patient_name"],
         data["age"],
         data["gender"],
@@ -115,21 +123,42 @@ def search_reports(keyword):
     rows = cursor.fetchall()
     conn.close()
     return rows
-
-def get_user_reports(phone):
-    """Fetches all reports associated with a specific user phone number."""
+def get_user_reports(user_id=None, phone=None):
+    """Fetches all reports associated with a specific user ID or phone number, sorted by newest first."""
     conn = sqlite3.connect(REPORTS_DB)
+    conn.row_factory = sqlite3.Row  # <--- Enables dictionary-like column access
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM reports WHERE phone = ?", (phone,))
+    
+    if user_id and phone:
+        cursor.execute("SELECT * FROM reports WHERE user_id = ? OR phone = ? ORDER BY id DESC", (user_id, phone))
+    elif user_id:
+        cursor.execute("SELECT * FROM reports WHERE user_id = ? ORDER BY id DESC", (user_id,))
+    elif phone:
+        cursor.execute("SELECT * FROM reports WHERE phone = ? ORDER BY id DESC", (phone,))
+    else:
+        rows = []
+        conn.close()
+        return rows
+        
     rows = cursor.fetchall()
     conn.close()
     return rows
 
-def get_user_stats(phone):
-    """Calculates basic stats for user profile display."""
+def search_reports(keyword):
+    """Searches reports by patient name or phone number."""
+    conn = sqlite3.connect(REPORTS_DB)
+    conn.row_factory = sqlite3.Row  # <--- Enables dictionary-like column access
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM reports WHERE patient_name LIKE ? OR phone LIKE ? ORDER BY id DESC", (f"%{keyword}%", f"%{keyword}%"))
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
+
+def get_user_stats(identifier):
+    """Calculates basic stats for user profile display by user ID or phone."""
     conn = sqlite3.connect(REPORTS_DB)
     cursor = conn.cursor()
-    cursor.execute("SELECT COUNT(*) FROM reports WHERE phone = ?", (phone,))
+    cursor.execute("SELECT COUNT(*) FROM reports WHERE user_id = ? OR phone = ?", (identifier, identifier))
     total_scans = cursor.fetchone()[0]
     conn.close()
     return {"total_scans": total_scans}
