@@ -29,73 +29,121 @@ SMTP_PORT = 465
 SMTP_EMAIL = "pranavmatham@gmail.com"
 SMTP_PASSWORD = "rylnzfyvonfdplrj"
 
-def send_report_email(to_email, patient_name, prediction, confidence, date_time):
+from email.mime.image import MIMEImage
+import os
+
+def send_report_email(to_email, patient_name, prediction, confidence, date_time, image_path=None):
     try:
-        subject = "Thyroid AI Diagnostic Report - ThyroidDetect"
+        subject = "Official Medical Report - AI Thyroid Diagnostic System"
         
+        msg = MIMEMultipart("related")
+        msg["From"] = SMTP_EMAIL
+        msg["To"] = to_email
+        msg["Subject"] = subject
+
+        image_html = ""
+        resolved_image_path = None
+        
+        print(f"🔍 DEBUG: Received image_path parameter -> {image_path}")
+        
+        if image_path:
+            # Clean leading slashes if any (e.g., '/static/...' -> 'static/...')
+            clean_path = image_path.lstrip("/\\")
+            
+            # List possible absolute locations on your computer
+            potential_paths = [
+                os.path.abspath(image_path),
+                os.path.abspath(clean_path),
+                os.path.join(os.getcwd(), clean_path),
+                os.path.join(os.getcwd(), image_path)
+            ]
+            
+            for p in potential_paths:
+                print(f"🔍 DEBUG: Checking path -> {p} | Exists: {os.path.exists(p)}")
+                if os.path.exists(p) and os.path.isfile(p):
+                    resolved_image_path = p
+                    break
+
+        if resolved_image_path:
+            image_html = """
+            <div style="text-align: center; margin: 20px 0;">
+                <img src="cid:scan_image" style="max-width: 260px; border-radius: 6px; border: 1px solid #cbd5e1;" alt="Ultrasound Scan">
+            </div>
+            """
+            print(f"✔ SUCCESS: Found image at {resolved_image_path}")
+        else:
+            print("❌ ERROR: Could not find image file on disk for email embedding!")
+
         html_body = f"""
         <html>
         <head>
             <style>
-                body {{ font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; }}
-                .report-card {{ max-width: 600px; background: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin: auto; border-top: 5px solid #0d6efd; }}
-                .header {{ text-align: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }}
-                .header h2 {{ color: #333; margin: 0; }}
-                .header p {{ color: #778899; font-size: 13px; margin: 5px 0 0; }}
-                .section-title {{ font-size: 14px; font-weight: bold; color: #555; text-transform: uppercase; margin-top: 20px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }}
+                body {{ font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; color: #333; }}
+                .report-container {{ max-width: 650px; background: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin: auto; border-top: 6px solid #0f2537; }}
+                .header {{ text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px; }}
+                .header h2 {{ color: #0f2537; margin: 0; font-size: 22px; }}
+                .header p {{ color: #64748b; font-size: 13px; margin: 5px 0 0; }}
+                .section-title {{ font-size: 13px; font-weight: bold; color: #475569; text-transform: uppercase; margin-top: 25px; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; letter-spacing: 0.5px; }}
                 .info-table {{ width: 100%; margin-top: 10px; border-collapse: collapse; }}
-                .info-table td {{ padding: 8px; font-size: 14px; color: #333; }}
-                .result-box {{ background: #eef2f7; padding: 15px; border-radius: 6px; margin-top: 20px; text-align: center; }}
-                .result-box h3 {{ margin: 0; color: #0d6efd; font-size: 20px; }}
-                .result-box p {{ margin: 5px 0 0; color: #555; font-size: 14px; }}
-                .footer {{ margin-top: 30px; font-size: 12px; color: #888; text-align: center; border-top: 1px solid #eee; padding-top: 15px; }}
+                .info-table td {{ padding: 6px 0; font-size: 14px; color: #1e293b; }}
+                .result-box {{ background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 6px; margin-top: 15px; text-align: center; }}
+                .result-box h3 {{ margin: 0; color: #059669; font-size: 20px; }}
+                .result-box p {{ margin: 5px 0 0; color: #475569; font-size: 14px; }}
+                .footer {{ margin-top: 35px; font-size: 12px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 15px; }}
             </style>
         </head>
         <body>
-            <div class="report-card">
+            <div class="report-container">
                 <div class="header">
-                    <h2>AI Thyroid Diagnostic Report</h2>
-                    <p>AI-Assisted Deep Learning Ultrasound Screening System</p>
+                    <h2>ThyroidDetect | Patient Screening Report</h2>
+                    <p>AI-Assisted Deep Learning Ultrasound Diagnostic System</p>
                 </div>
                 
                 <div class="section-title">Patient Information</div>
                 <table class="info-table">
                     <tr>
                         <td><strong>Patient Name:</strong> {patient_name}</td>
-                        <td><strong>Date:</strong> {date_time}</td>
+                        <td><strong>Scan Date:</strong> {date_time}</td>
                     </tr>
                 </table>
 
+                <div class="section-title">Uploaded Ultrasound Image</div>
+                {image_html}
+
                 <div class="section-title">Diagnostic Results</div>
                 <div class="result-box">
-                    <h3>Primary Finding: {prediction}</h3>
+                    <h3>Result: {prediction}</h3>
                     <p>Confidence Level: <strong>{confidence}%</strong></p>
                 </div>
 
-                <div class="section-title">Important Note</div>
-                <p style="font-size: 13px; color: #666; line-height: 1.5;">
-                    This document is an AI-generated diagnostic screening report. The classifications provided are generated using deep learning image analysis and must be verified by a board-certified endocrinologist or physician prior to initiating any medical treatment.
+                <div class="section-title">Clinical Notes & Recommendations</div>
+                <p style="font-size: 13px; color: #475569; line-height: 1.6;">
+                    This screening report is generated automatically using deep learning image analysis. The results should be reviewed and verified by a qualified physician or endocrinologist before making any clinical decisions.
                 </p>
 
                 <div class="footer">
-                    <p>Regards,<br><strong>ThyroidDetect Team</strong></p>
+                    <p>Generated securely by ThyroidDetect AI Pipeline<br><strong>© 2026 M Pranav</strong></p>
                 </div>
             </div>
         </body>
         </html>
         """
 
-        msg = MIMEMultipart()
-        msg["From"] = SMTP_EMAIL
-        msg["To"] = to_email
-        msg["Subject"] = subject
         msg.attach(MIMEText(html_body, "html"))
+
+        if resolved_image_path:
+            with open(resolved_image_path, "rb") as img_file:
+                img_data = img_file.read()
+                img = MIMEImage(img_data)
+                img.add_header('Content-ID', '<scan_image>')
+                img.add_header('Content-Disposition', 'inline', filename=os.path.basename(resolved_image_path))
+                msg.attach(img)
 
         with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT) as server:
             server.login(SMTP_EMAIL, SMTP_PASSWORD)
             server.sendmail(SMTP_EMAIL, to_email, msg.as_string())
 
-        print("✔ HTML Email sent successfully!")
+        print("✔ Complete report email sent successfully!")
         return True
     except Exception as e:
         print("❌ Email sending failed:", repr(e))
@@ -400,8 +448,55 @@ def diseases():
 def about():
     return render_template("about.html", active_page="about")
 
-@app.route("/contact")
+@app.route("/contact", methods=["GET", "POST"])
 def contact():
+    if request.method == "POST":
+        name = request.form.get("name")
+        sender_email = request.form.get("email")
+        message = request.form.get("message")
+        
+        # Build email content for the contact inquiry
+        subject = f"New Contact Message from {name} - ThyroidDetect"
+        html_body = f"""
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; }}
+                .card {{ max-width: 600px; background: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin: auto; border-top: 5px solid #1d4ed8; }}
+                h2 {{ color: #0f2537; }}
+                p {{ color: #334155; line-height: 1.5; }}
+            </style>
+        </head>
+        <body>
+            <div class="card">
+                <h2>New Website Inquiry</h2>
+                <p><strong>Name:</strong> {name}</p>
+                <p><strong>Email:</strong> {sender_email}</p>
+                <p><strong>Message:</strong></p>
+                <p style="background: #f8fafc; padding: 15px; border-radius: 6px; border: 1px solid #e2e8f0;">{message}</p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        try:
+            msg = MIMEMultipart()
+            msg["From"] = SMTP_EMAIL
+            msg["To"] = SMTP_EMAIL  # Sends the message to your own inbox
+            msg["Subject"] = subject
+            msg.attach(MIMEText(html_body, "html"))
+
+            with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT) as server:
+                server.login(SMTP_EMAIL, SMTP_PASSWORD)
+                server.sendmail(SMTP_EMAIL, SMTP_EMAIL, msg.as_string())
+
+            flash("Thank you! Your message has been sent successfully.", "success")
+        except Exception as e:
+            print("❌ Contact email failed:", repr(e))
+            flash("Failed to send message. Please check terminal for errors.", "error")
+            
+        return redirect(url_for("contact"))
+        
     return render_template("contact.html", active_page="contact")
 
 @app.route("/logout")
