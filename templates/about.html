@@ -1,38 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>About - AI Thyroid Detector</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f8fafc; margin: 0; }
-        .navbar { background-color: #0F2537; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-        .navbar .logo { font-weight: bold; font-size: 18px; }
-        .nav-links a { color: white; text-decoration: none; margin-left: 20px; font-size: 14px; padding: 6px 12px; border-radius: 4px; }
-        .nav-links a.active, .nav-links a:hover { background-color: #EF4444; }
-        .container { max-width: 800px; margin: 40px auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        h1 { color: #0F2537; margin-top: 0; }
-        p { color: #475569; line-height: 1.6; }
-    </style>
-</head>
-<body>
-    <div class="navbar">
-        <div class="logo">AI Thyroid Detector <br><span style="font-size: 11px; font-weight: normal; color: #94a3b8;">Advanced Medical Scanner</span></div>
-        <div class="nav-links">
-            <a href="/">Home</a>
-            <a href="/upload">Upload</a>
-            <a href="/diseases">Diseases</a>
-            <a href="/about" class="active">About</a>
-            <a href="/contact">Contact</a>
-            <a href="/profile">Profile</a>
-            <a href="/history">History</a>
-            <a href="/logout">Logout</a>
-        </div>
+{% include 'navbar.html' %}
+
+<div class="about-container" style="max-width: 800px; margin: 40px auto; padding: 30px; background: #ffffff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); font-family: Arial, sans-serif; text-align: center;">
+    
+    <!-- Developer Profile Photo -->
+    <div style="margin-bottom: 20px;">
+        <img src="{{ url_for('static', filename='me.png') }}" alt="M Pranav" style="width: 130px; height: 130px; border-radius: 50%; object-fit: cover; border: 3px solid #0f2537; box-shadow: 0 4px 8px rgba(0,0,0,0.15);">
+        <h2 style="color: #0f2537; margin: 15px 0 5px; font-size: 24px;">M Pranav</h2>
+        <p style="color: #64748b; font-size: 14px; margin: 0;">USN: <code>1JB22CS072</code> | Computer Science and Engineering</p>
     </div>
 
-    <div class="container">
-        <h1>About Our System</h1>
-        <p>The AI Thyroid Detector is an advanced diagnostic assistance system designed to analyze ultrasound imagery of thyroid nodules. Utilizing state-of-the-art deep learning architectures (including custom CNNs and EfficientNet models), the platform provides rapid initial screening evaluations to aid clinical specialists and patients.</p>
-        <p>Our objective is to streamline risk stratification, making preliminary evaluations faster, safer, and consistently reliable.</p>
+    <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 25px 0;">
+
+    <div style="text-align: left; display: flex; gap: 25px; align-items: flex-start; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 280px;">
+            <h3 style="color: #1d4ed8; margin-top: 0;">About ThyroidDetect</h3>
+            <p style="color: #475569; line-height: 1.6; font-size: 14px;">
+                <strong>ThyroidDetect</strong> is an advanced, AI-powered diagnostic web platform designed for the rapid automated screening and classification of thyroid nodules from ultrasound scans. Built to assist medical workflows, it integrates deep learning models with secure session handling and automated HTML medical report generation via SMTP.
+            </p>
+            
+            <h3 style="color: #1d4ed8; margin-top: 20px;">Developer Background</h3>
+            <p style="color: #475569; line-height: 1.6; font-size: 14px;">
+                Graduated with a Bachelor of Engineering in Computer Science and Engineering from SJB Institute of Technology, Bengaluru. Passionate about building robust full-stack systems, deep learning computer vision applications, and practical healthcare automation pipelines.
+            </p>
+        </div>
+        
+        <div style="flex: 0 0 240px; background: #f8fafc; padding: 20px; border-radius: 6px; border: 1px solid #e2e8f0;">
+            <h4 style="color: #0f2537; margin-top: 0; font-size: 15px; border-bottom: 1px solid #cbd5e1; padding-bottom: 5px;">Core Tech Stack</h4>
+            <ul style="padding-left: 18px; color: #334155; font-size: 13px; line-height: 1.6; margin: 10px 0 0;">
+                <li><strong>Backend:</strong> Python, Flask, SQLite</li>
+                <li><strong>AI / CV:</strong> PyTorch, OpenCV, EfficientNet</li>
+                <li><strong>Frontend:</strong> HTML5, CSS3, Jinja2</li>
+                <li><strong>Integration:</strong> Gmail SMTP, CID Images</li>
+            </ul>
+        </div>
     </div>
-</body>
-</html>
+</div>
