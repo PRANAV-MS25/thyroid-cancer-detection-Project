@@ -4,7 +4,8 @@ import smtplib
 from datetime import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from email.mime.image import MIMEImage
+from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory
 
 from predict import predict
 from db.database import (
@@ -29,9 +30,6 @@ SMTP_PORT = 465
 SMTP_EMAIL = "pranavmatham@gmail.com"
 SMTP_PASSWORD = "rylnzfyvonfdplrj"
 
-from email.mime.image import MIMEImage
-import os
-
 def send_report_email(to_email, patient_name, prediction, confidence, date_time, image_path=None):
     try:
         subject = "Official Medical Report - AI Thyroid Diagnostic System"
@@ -47,10 +45,8 @@ def send_report_email(to_email, patient_name, prediction, confidence, date_time,
         print(f"🔍 DEBUG: Received image_path parameter -> {image_path}")
         
         if image_path:
-            # Clean leading slashes if any (e.g., '/static/...' -> 'static/...')
             clean_path = image_path.lstrip("/\\")
             
-            # List possible absolute locations on your computer
             potential_paths = [
                 os.path.abspath(image_path),
                 os.path.abspath(clean_path),
@@ -160,6 +156,17 @@ os.makedirs(PROFILE_FOLDER, exist_ok=True)
 init_db()
 
 # =====================================================
+# CUSTOM IMAGE ROUTE FOR TEMPLATES FOLDER
+# =====================================================
+@app.route('/thyroid-image')
+def get_thyroid_image():
+    return send_from_directory(os.path.join(app.root_path, 'templates'), 'thyroid_image.png')
+
+@app.route('/me-image')
+def me_image():
+    return send_from_directory(os.path.join(app.root_path, 'templates'), 'me.jpg')
+
+# =====================================================
 # LANDING & DASHBOARD ROUTES
 # =====================================================
 @app.route("/")
@@ -196,7 +203,6 @@ def login():
         if user_id:
             session["user_id"] = user_id
             session["name"] = name
-            
             user_full = get_user_by_id(user_id)
             if user_full:
                 session["user_email"] = user_full[4]
@@ -295,8 +301,8 @@ def upload_page():
             confidence = max(88.0, min(confidence, 96.5))
         else:
             confidence = max(80.0, min(confidence, 90.0))
-            
-        confidence = round(confidence, 1)
+        
+        confidence = round(confidence, 1)  # Fixed dangling '+' here
         date_time = datetime.now().strftime("%d %b %Y, %I:%M %p")
 
         save_patient_report({
@@ -455,7 +461,6 @@ def contact():
         sender_email = request.form.get("email")
         message = request.form.get("message")
         
-        # Build email content for the contact inquiry
         subject = f"New Contact Message from {name} - ThyroidDetect"
         html_body = f"""
         <html>
@@ -482,7 +487,7 @@ def contact():
         try:
             msg = MIMEMultipart()
             msg["From"] = SMTP_EMAIL
-            msg["To"] = SMTP_EMAIL  # Sends the message to your own inbox
+            msg["To"] = SMTP_EMAIL  
             msg["Subject"] = subject
             msg.attach(MIMEText(html_body, "html"))
 
