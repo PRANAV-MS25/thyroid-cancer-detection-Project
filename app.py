@@ -160,7 +160,7 @@ init_db()
 # =====================================================
 @app.route('/thyroid-image')
 def get_thyroid_image():
-    return send_from_directory(os.path.join(app.root_path, 'templates'), 'thyroid_image.png')
+    return send_from_directory(app.root_path, 'thyroid_image.jpg')
 
 @app.route('/me-image')
 def me_image():
