@@ -148,26 +148,31 @@ Prediction History
 View Diagnosis Result
 
 ```
-|        Login Page        |       Home / Dashboard      |
-| :----------------------: | :-------------------------: |
+## 📸 App Interface Gallery
+
+### 1. Authentication & Dashboard
+
+| Login Page | Home / Dashboard |
+| :---: | :---: |
 | ![Login Page](login.png) | ![Home Dashboard](home.png) |
 
-```
-|         Upload Scan        |          Diseases Information         |
-| :------------------------: | :-----------------------------------: |
+### 2. Thyroid Scan & Information
+
+| Upload Scan | Diseases Information |
+| :---: | :---: |
 | ![Upload Scan](upload.png) | ![Diseases Information](diseases.png) |
 
-```
-|         Patient History         |         User Profile         |
-| :-----------------------------: | :--------------------------: |
+### 3. History & Profile
+
+| Patient History | User Profile |
+| :---: | :---: |
 | ![Patient History](history.png) | ![User Profile](profile.png) |
 
-```
-|        About Page        |
-| :----------------------: |
-| ![About Page](about.png) |
+### 4. About
 
-```
+| About Page |
+| :---: |
+| ![About Page](about.png) |
 🌐 Repository
 
 GitHub Repository: PRANAV-MS25/thyroid-cancer-detection-Project
