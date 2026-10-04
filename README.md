@@ -70,3 +70,39 @@ Thyroid-Nodule-Classification/
 ├── history.png
 ├── profile.png
 └── about.png
+-------
+```
+🗄️ Core Components & Architecture
+app.py — Flask Backend
+Component	Description
+Flask Application	Initializes and manages the web application
+Authentication	Handles user registration, login, logout, and sessions
+Image Upload	Accepts and validates thyroid ultrasound images
+Image Preprocessing	Prepares uploaded images for CNN inference
+Model Inference	Loads and executes the trained EfficientNet-B0 model
+Classification	Generates the predicted thyroid nodule class
+Confidence Score	Calculates prediction probability/confidence
+Grad-CAM	Generates visual explanations for model predictions
+Prediction History	Stores and retrieves previous prediction results
+Dashboard	Provides access to the application's major features
+database.py — Database Layer
+Component	Description
+SQLite Database	Lightweight relational database for application data
+User Data	Stores registered user information
+Prediction Data	Stores classification results
+History Management	Retrieves previous predictions
+Database Operations	Provides backend access to stored application data
+🧠 Deep Learning Architecture
+EfficientNet-B0
+
+The classification engine uses EfficientNet-B0, a convolutional neural network architecture designed to provide strong image classification performance while maintaining computational efficiency.
+
+Stage	Implementation
+Input	Thyroid ultrasound image
+Preprocessing	Image resizing and normalization
+Feature Extraction	EfficientNet-B0 convolutional layers
+Classification	CNN-based thyroid nodule classification
+Prediction	Benign / Malignant or configured classification stage
+Confidence	Prediction probability
+Explainability	Grad-CAM heatmap
+Output	Classification result + confidence + visualization
