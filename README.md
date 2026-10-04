@@ -70,6 +70,8 @@ Thyroid-Nodule-Classification/
 ├── history.png
 ├── profile.png
 └── about.png
+---
+```
 ## 🗄️ Core Components & Architecture
 
 ### `app.py` — Flask Backend
