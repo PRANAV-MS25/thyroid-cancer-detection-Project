@@ -146,3 +146,10 @@ Store Result in SQLite
 Prediction History
   ↓
 View Diagnosis Result
+
+----
+```
+|        Login Page        |       Home / Dashboard      |
+| :----------------------: | :-------------------------: |
+| ![Login Page](login.png) | ![Home Dashboard](home.png) |
+
